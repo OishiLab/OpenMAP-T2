@@ -1,17 +1,17 @@
-# OpenMAP-T1-V2
-**OpenMAP-T1-V2 parcellates the whole brain into 280 anatomical regions based on JHU-atlas in 50 (sec/case).**
+# OpenMAP-T2
+**OpenMAP-T2 parcellates the whole brain into 276 anatomical regions based on JHU-atlas in 50 (sec/case).**
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1fmfkxxZjChExnl5cHITYkNYgTu3MZ7Ql#scrollTo=xwZxyL5ewVNF)
 
 ## Installation Instructions
 0. install python and make virtual environment<br>
-Python 3.9 or later is recommended. However, as of December 6, 2024, OpenMAP-T1 does not work with Python 3.13.<br>
+Python 3.9 or later is recommended. However, as of December 6, 2024, OpenMAP-T2 does not work with Python 3.13.<br>
 If you encounter issues, please consider using a different version.
 
 2. Clone this repository, and go into the repository:
 ```
-git clone -b v2.0.0 https://github.com/OishiLab/OpenMAP-T1.git
-cd OpenMAP-T1
+git clone -b v2.0.0 https://github.com/OishiLab/OpenMAP-T2.git
+cd OpenMAP-T2
 ```
 2. Please install PyTorch compatible with your environment.<br>
 https://pytorch.org/
@@ -29,10 +29,10 @@ pip install -r requirements.txt
 ```
 5. Please apply and download the pre-trained model from the link below and upload it to your server.
 
-6. You can run OpenMAP-T1 !!
+6. You can run OpenMAP-T2 !!
 
 ## How to use it
-Using OpenMAP-T1 is straightforward. You can use it in any terminal on your linux system. We provide CPU as well as GPU support. Running on GPU is a lot faster though and should always be preferred. Here is a minimalistic example of how you can use OpenMAP-T1.
+Using OpenMAP-T2 is straightforward. You can use it in any terminal on your linux system. We provide CPU as well as GPU support. Running on GPU is a lot faster though and should always be preferred. Here is a minimalistic example of how you can use OpenMAP-T2.
 ```
 python3 parcellation.py -i INPUT_FOLDER -o OUTPUT_FOLDER -m MODEL_FOLDER
 ```
@@ -60,11 +60,11 @@ OUTPUT_FOLDER/
   ├ A/
   |   ├ A.nii # input image
   |   ├ A_volume.csv # volume information (mm^3)
-  |   └ A_280.nii # parcellation map
+  |   └ A_274.nii # parcellation map
   └ B/
       ├ B.nii
       ├ B_volume.csv
-      └ B_280.nii
+      └ B_274.nii
 
 MODEL_FOLDER/
   ├ SSNet/SSNet.pth
@@ -78,7 +78,7 @@ MODEL_FOLDER/
 ```
 
 ## FAQ
-* **How much GPU memory do I need to run OpenMAP-T1?** <br>
+* **How much GPU memory do I need to run OpenMAP-T2?** <br>
 We ran all our experiments on NVIDIA RTX3090 GPUs with 24 GB memory. For inference you will need less, but since inference in implemented by exploiting the fully convolutional nature of CNNs the amount of memory required depends on your image. Typical image should run with less than 4 GB of GPU memory consumption. If you run into out of memory problems please check the following: 1) Make sure the voxel spacing of your data is correct and 2) Ensure your MRI image only contains the head region.
 
 * **Will you provide the training code as well?** <br>

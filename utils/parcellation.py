@@ -1,9 +1,6 @@
 import numpy as np
 import torch
 
-from utils.functions import normalize
-
-
 def parcellate(voxel, model, device, mode):
     """
     Parcellates a given voxel volume using a specified model and mode.
@@ -18,11 +15,11 @@ def parcellate(voxel, model, device, mode):
         torch.Tensor: The parcellated voxel volume.
     """
     if mode == "c":
-        stack = (224, 192, 192)
+        stack = (224, 224, 224)
     elif mode == "s":
-        stack = (192, 224, 192)
+        stack = (224, 224, 224)
     elif mode == "a":
-        stack = (192, 224, 192)
+        stack = (224, 224, 224)
 
     # Set the model to evaluation mode
     model.eval()
@@ -33,7 +30,7 @@ def parcellate(voxel, model, device, mode):
     # Disable gradient calculation for inference
     with torch.inference_mode():
         # Initialize an empty tensor to store the parcellation results
-        box = torch.zeros(stack[0], 142, stack[1], stack[2])
+        box = torch.zeros(stack[0], 139, stack[1], stack[2])
 
         # Iterate over each slice in the stack dimension
         for i in range(1, stack[0] + 1):
@@ -49,7 +46,7 @@ def parcellate(voxel, model, device, mode):
             box[i - 1] = x_out
 
         # Reshape the box tensor to the desired output shape
-        return box.reshape(stack[0], 142, stack[1], stack[2])
+        return box.reshape(stack[0], 139, stack[1], stack[2])
 
 
 def parcellation(voxel, pnet_c, pnet_s, pnet_a, device):
@@ -66,8 +63,6 @@ def parcellation(voxel, pnet_c, pnet_s, pnet_a, device):
     Returns:
         numpy.ndarray: The parcellated output as a numpy array.
     """
-    # Normalize the voxel data
-    voxel = normalize(voxel)
 
     # Prepare the voxel data for different views
     coronal = voxel.transpose(1, 2, 0)

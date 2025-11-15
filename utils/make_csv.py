@@ -1,9 +1,9 @@
 import os
-from collections import defaultdict
-
 import numpy as np
 import pandas as pd
-
+import nibabel as nib
+from nibabel import processing
+from collections import defaultdict
 
 def change_level(df, level="Type1_Level1", sulcus=True):
     """
@@ -44,7 +44,6 @@ def change_level(df, level="Type1_Level1", sulcus=True):
     change_df = pd.concat(change_df_list, axis=1)
     return change_df
 
-
 def make_csv(parcellation, output_dir, basename):
     """
     Generates multiple CSV files containing volume data for different levels of parcellation.
@@ -64,11 +63,10 @@ def make_csv(parcellation, output_dir, basename):
     4. Changes the level of the DataFrame to different hierarchical levels (Type1_Level4, Type1_Level3, etc.).
     5. Saves the DataFrames for each level to separate CSV files in the specified output directory.
     """
+
     csv_path = "level/Level5.txt"
-    df_Type1_level5 = (
-        pd.read_table(csv_path, names=["number", "region"]).astype("str").set_index("number")
-    )
-    for i in range(1, 281):
+    df_Type1_level5 = (pd.read_table(csv_path, names=["number", "region"]).astype("str").set_index("number"))
+    for i in range(1, 275):
         volume = np.count_nonzero(parcellation == i)
         df_Type1_level5.loc[str(i), basename] = volume
 

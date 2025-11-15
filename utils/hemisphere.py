@@ -1,10 +1,9 @@
 import torch
+import numpy as np
+import torch.nn.functional as F
 from scipy.ndimage import binary_dilation
 
-from utils.functions import normalize
-
-
-def separate(voxel, model, device, mode):
+def separate(voxel, model, device):
     """
     Separates the voxel data based on the specified mode and processes it using the given model.
 
@@ -17,12 +16,8 @@ def separate(voxel, model, device, mode):
     Returns:
         torch.Tensor: The processed output tensor with shape (stack[0], 3, stack[1], stack[2]).
     """
-    if mode == "c":
-        # Set the stack dimensions for coronal mode
-        stack = (224, 192, 192)
-    elif mode == "a":
-        # Set the stack dimensions for axial mode
-        stack = (192, 224, 192)
+    stack = (224, 224, 224)
+    voxel = np.pad(voxel, [(1, 1), (0, 0), (0, 0)], "constant", constant_values=voxel.min())
 
     # Set the model to evaluation mode
     model.eval()
@@ -30,22 +25,20 @@ def separate(voxel, model, device, mode):
     # Disable gradient calculation for inference
     with torch.inference_mode():
         # Initialize an output tensor with the specified stack dimensions
-        output = torch.zeros(stack[0], 3, stack[1], stack[2]).to(device)
-
+        output = torch.zeros(stack[0], 3, stack[1], stack[2], dtype=torch.float32)
         # Iterate over each slice in the voxel data
-        for i, v in enumerate(voxel):
-            # Reshape the slice and convert it to a tensor
-            image = torch.tensor(v.reshape(1, 1, stack[1], stack[2]))
+        for i in range(1, stack[0] + 1):
+            image = voxel[i].astype(np.float32)
+            if np.count_nonzero(image > image.min()) == 0:
+                continue
             # Move the tensor to the specified device
-            image = image.to(device)
+            image = torch.tensor(image[np.newaxis, np.newaxis, :, :]).float().to(device)
             # Perform a forward pass through the model and apply softmax
             x_out = torch.softmax(model(image), 1).detach()
             # Store the output in the corresponding slice of the output tensor
-            output[i] = x_out
-
+            output[i - 1] = x_out[0]
         # Return the processed output tensor
         return output
-
 
 def hemisphere(voxel, hnet_c, hnet_a, device):
     """
@@ -60,16 +53,14 @@ def hemisphere(voxel, hnet_c, hnet_a, device):
     Returns:
         numpy.ndarray: The processed and dilated mask of the hemispheres.
     """
-    # Normalize the voxel data
-    voxel = normalize(voxel)
 
     # Transpose the voxel data for coronal and transverse views
     coronal = voxel.transpose(1, 2, 0)
     transverse = voxel.transpose(2, 1, 0)
 
     # Separate the coronal and transverse views using the respective models
-    out_c = separate(coronal, hnet_c, device, "c").permute(1, 3, 0, 2)
-    out_a = separate(transverse, hnet_a, device, "a").permute(1, 3, 2, 0)
+    out_c = separate(coronal, hnet_c, device).permute(1, 3, 0, 2)
+    out_a = separate(transverse, hnet_a, device).permute(1, 3, 2, 0)
 
     # Combine the outputs from both views
     out_e = out_c + out_a
@@ -90,3 +81,4 @@ def hemisphere(voxel, hnet_c, hnet_a, device):
 
     # Return the final dilated mask
     return dilated_mask_2
+    # return out_e

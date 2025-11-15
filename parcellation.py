@@ -1,18 +1,15 @@
-import argparse
-import glob
 import os
-from functools import partial
-
-import nibabel as nib
-import numpy as np
+import glob
 import torch
+import argparse
+import numpy as np
+import nibabel as nib
 from nibabel import processing
+from functools import partial
 from tqdm import tqdm as std_tqdm
 
 tqdm = partial(std_tqdm, dynamic_ncols=True)
 
-
-from utils.cropping import cropping
 from utils.hemisphere import hemisphere
 from utils.load_model import load_model
 from utils.make_csv import make_csv
@@ -20,7 +17,6 @@ from utils.parcellation import parcellation
 from utils.postprocessing import postprocessing
 from utils.preprocessing import preprocessing
 from utils.stripping import stripping
-
 
 def create_parser():
     """
@@ -76,21 +72,21 @@ def main():
         None
     """
 
-    print(
-        "\n#######################################################################\n"
-        "Please cite the following paper when using OpenMAP-T1:\n"
-        "Kei Nishimaki, Kengo Onda, Kumpei Ikuta, Jill Chotiyanonta, Yuto Uchida, Hitoshi Iyatomi, Kenichi Oishi (2024).\n"
-        "OpenMAP-T1: A Rapid Deep Learning Approach to Parcellate 280 Anatomical Regions to Cover the Whole Brain.\n"
-        "paper: https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.70063.\n"
-        "Submitted for publication in the Human Brain Mapping.\n"
-        "#######################################################################\n"
-    )
+    # print(
+    #     "\n#######################################################################\n"
+    #     "Please cite the following paper when using OpenMAP-T1:\n"
+    #     "Kei Nishimaki, Kengo Onda, Kumpei Ikuta, Jill Chotiyanonta, Yuto Uchida, Hitoshi Iyatomi, Kenichi Oishi (2024).\n"
+    #     "OpenMAP-T1: A Rapid Deep Learning Approach to Parcellate 280 Anatomical Regions to Cover the Whole Brain.\n"
+    #     "paper: https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.70063.\n"
+    #     "Submitted for publication in the Human Brain Mapping.\n"
+    #     "#######################################################################\n"
+    # )
     # Parse command-line arguments
     opt = create_parser()
 
     # Determine the device to use (CUDA, MPS, or CPU)
     if torch.cuda.is_available():
-        device = torch.device("cuda")
+        device = torch.device("cuda:6")
     elif torch.backends.mps.is_available():
         device = torch.device("mps")
     else:
@@ -98,7 +94,7 @@ def main():
     print(f"Using device: {device}")
 
     # Load the pretrained models
-    cnet, ssnet, pnet_c, pnet_s, pnet_a, hnet_c, hnet_a = load_model(opt, device)
+    ssnet, pnet_c, pnet_s, pnet_a, hnet_c, hnet_a = load_model(opt, device)
     print("load complete !!")
 
     # Get the list of input files
@@ -126,39 +122,44 @@ def main():
         # Preprocess the input image
         odata, data = preprocessing(path, output_dir, basename)
 
-        # Crop the image using the cropping network
-        cropped = cropping(data, cnet, device)
-
         # Strip the image using the stripping network
-        stripped, shift = stripping(cropped, data, ssnet, device)
+        stripped, shift, mask = stripping(data, ssnet, device)
+        # stripped, shift = stripping(cropped, data, ssnet, device)
+        nii = nib.Nifti1Image(mask.astype(np.uint16), affine=data.affine)
+        header = odata.header
+        nii = processing.conform(nii, out_shape=(header["dim"][1], header["dim"][2], header["dim"][3]), voxel_size=(header["pixdim"][1], header["pixdim"][2], header["pixdim"][3]), order=0,)
+        nib.save(nii, os.path.join(output_dir, f"{basename}_ss_mask.nii"))
 
         # Parcellate the stripped image using the parcellation networks
         parcellated = parcellation(stripped, pnet_c, pnet_s, pnet_a, device)
 
         # Separate the hemispheres using the hemisphere networks
         separated = hemisphere(stripped, hnet_c, hnet_a, device)
+        output = np.roll(separated, (-shift[0], -shift[1], -shift[2]), axis=(0, 1, 2))
+        nii = nib.Nifti1Image(output.astype(np.uint16), affine=data.affine)
+        nii = processing.conform(nii, out_shape=(header["dim"][1], header["dim"][2], header["dim"][3]), voxel_size=(header["pixdim"][1], header["pixdim"][2], header["pixdim"][3]), order=0,)
+        nib.save(nii, os.path.join(output_dir, f"{basename}_hemisphere.nii"))
 
         # Postprocess the parcellated and separated image
         output = postprocessing(parcellated, separated, shift, device)
 
-        # Generate a CSV file with volume information and save it
-        df = make_csv(output, output_dir, basename)
-
         # Create a new NIfTI image with the processed output and save it
         nii = nib.Nifti1Image(output.astype(np.uint16), affine=data.affine)
-        header = odata.header
+        # header = odata.header
         nii = processing.conform(
             nii,
             out_shape=(header["dim"][1], header["dim"][2], header["dim"][3]),
             voxel_size=(header["pixdim"][1], header["pixdim"][2], header["pixdim"][3]),
             order=0,
         )
-        nib.save(nii, os.path.join(output_dir, f"{basename}_280.nii"))
+        nib.save(nii, os.path.join(output_dir, f"{basename}_274.nii"))
+
+        # Generate a CSV file with volume information and save it
+        df = make_csv(output, output_dir, basename)
 
         # Clean up temporary files
-        del odata, data
+        # del odata, data
     return
-
 
 if __name__ == "__main__":
     main()
