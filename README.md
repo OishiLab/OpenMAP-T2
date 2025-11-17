@@ -28,8 +28,7 @@ https://pytorch.org/get-started/previous-versions/
 ```
 pip install -r requirements.txt
 ```
-5. Please apply and download the pre-trained model from the link below and upload it to your server.
-
+5. Please apply and download the pre-trained model from the link below and upload it to your server.<br>
 [Link of pretrained model](https://forms.office.com/r/Zpt7N5CdE2)
 
 6. You can run OpenMAP-T2 !!
@@ -49,7 +48,7 @@ If the error occurs for Windows users, please change ```Python3``` to ```Python`
 You can get the pretrained model from this link.
 [Link of pretrained model](https://forms.office.com/r/Zpt7N5CdE2)
 
-<!-- ![image](media/Download_pretrained.png) -->
+![image](media/Download_pretrained.png)
 
 ## Folder
 All images you input must be in NifTi format and have a .nii extension.
