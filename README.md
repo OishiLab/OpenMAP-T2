@@ -30,6 +30,8 @@ pip install -r requirements.txt
 ```
 5. Please apply and download the pre-trained model from the link below and upload it to your server.
 
+[Link of pretrained model](https://forms.office.com/r/Zpt7N5CdE2)
+
 6. You can run OpenMAP-T2 !!
 
 ## How to use it
