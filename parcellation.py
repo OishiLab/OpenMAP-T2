@@ -128,18 +128,18 @@ def main():
         nii = nib.Nifti1Image(mask.astype(np.uint16), affine=data.affine)
         header = odata.header
         nii = processing.conform(nii, out_shape=(header["dim"][1], header["dim"][2], header["dim"][3]), voxel_size=(header["pixdim"][1], header["pixdim"][2], header["pixdim"][3]), order=0,)
-        nib.save(nii, os.path.join(output_dir, f"{basename}_ss_mask.nii"))
+        nib.save(nii, os.path.join(output_dir, f"{basename}_stripped_mask.nii"))
 
         # Parcellate the stripped image using the parcellation networks
         parcellated = parcellation(stripped, pnet_c, pnet_s, pnet_a, device)
 
         # Separate the hemispheres using the hemisphere networks
         separated = hemisphere(stripped, hnet_c, hnet_a, device)
-        output = np.pad(separated, [(16, 16), (16, 16), (16, 16)], "constant", constant_values=0)
-        output = np.roll(output, (-shift[0], -shift[1], -shift[2]), axis=(0, 1, 2))
-        nii = nib.Nifti1Image(output.astype(np.uint16), affine=data.affine)
-        nii = processing.conform(nii, out_shape=(header["dim"][1], header["dim"][2], header["dim"][3]), voxel_size=(header["pixdim"][1], header["pixdim"][2], header["pixdim"][3]), order=0,)
-        nib.save(nii, os.path.join(output_dir, f"{basename}_hemisphere.nii"))
+        # output = np.pad(separated, [(16, 16), (16, 16), (16, 16)], "constant", constant_values=0)
+        # output = np.roll(output, (-shift[0], -shift[1], -shift[2]), axis=(0, 1, 2))
+        # nii = nib.Nifti1Image(output.astype(np.uint16), affine=data.affine)
+        # nii = processing.conform(nii, out_shape=(header["dim"][1], header["dim"][2], header["dim"][3]), voxel_size=(header["pixdim"][1], header["pixdim"][2], header["pixdim"][3]), order=0,)
+        # nib.save(nii, os.path.join(output_dir, f"{basename}_hemisphere.nii"))
 
         # Postprocess the parcellated and separated image
         output = postprocessing(parcellated, separated, shift, device)

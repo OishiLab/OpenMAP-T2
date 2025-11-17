@@ -1,11 +1,12 @@
 # OpenMAP-T2
-**OpenMAP-T2 parcellates the whole brain into 276 anatomical regions based on JHU-atlas in 50 (sec/case).**
+**OpenMAP-T2 parcellates the whole brain into 274 anatomical regions based on JHU-atlas in 50 (sec/case).**
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1fmfkxxZjChExnl5cHITYkNYgTu3MZ7Ql#scrollTo=xwZxyL5ewVNF)
+<!-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1fmfkxxZjChExnl5cHITYkNYgTu3MZ7Ql#scrollTo=xwZxyL5ewVNF) -->
 
 ## Installation Instructions
 0. install python and make virtual environment<br>
-Python 3.9 or later is recommended. However, as of December 6, 2024, OpenMAP-T2 does not work with Python 3.13.<br>
+Python 3.9 or later is recommended. 
+<!-- However, as of November 17, 2025, OpenMAP-T2 does not work with Python 3.13.<br> -->
 If you encounter issues, please consider using a different version.
 
 2. Clone this repository, and go into the repository:
@@ -44,7 +45,8 @@ If the error occurs for Windows users, please change ```Python3``` to ```Python`
 
 ## How to download the pretrained model.
 You can get the pretrained model from this link.
-[Link of pretrained model](https://forms.office.com/Pages/ResponsePage.aspx?id=OPSkn-axO0eAP4b4rt8N7Iz6VabmlEBIhG4j3FiMk75UQUxBMkVPTzlIQTQ1UEZJSFY1NURDNzRERC4u)
+<!-- [Link of pretrained model](https://forms.office.com/Pages/ResponsePage.aspx?id=OPSkn-axO0eAP4b4rt8N7Iz6VabmlEBIhG4j3FiMk75UQUxBMkVPTzlIQTQ1UEZJSFY1NURDNzRERC4u) -->
+[Link of pretrained model](https://drive.google.com/drive/folders/1zj_Yvw8Cu5EzdM86fXlx_SQME8X1IBuO?usp=sharing)
 
 <!-- ![image](media/Download_pretrained.png) -->
 
@@ -59,7 +61,9 @@ INPUR_FOLDER/
 OUTPUT_FOLDER/
   ├ A/
   |   ├ A.nii # input image
-  |   ├ A_volume.csv # volume information (mm^3)
+  |   ├ A_SylvianRatio.csv # Ratio of Sylvian Fissure to CSF Sulcus
+  |   ├ A_Type1_Level1.csv # volume information of Type1_Level1 (mm^3)
+  |   ├ A_stripped_mask # skull stripped brain mask
   |   └ A_274.nii # parcellation map
   └ B/
       ├ B.nii
