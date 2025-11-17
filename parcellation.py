@@ -135,7 +135,8 @@ def main():
 
         # Separate the hemispheres using the hemisphere networks
         separated = hemisphere(stripped, hnet_c, hnet_a, device)
-        output = np.roll(separated, (-shift[0], -shift[1], -shift[2]), axis=(0, 1, 2))
+        output = np.pad(separated, [(16, 16), (16, 16), (16, 16)], "constant", constant_values=0)
+        output = np.roll(output, (-shift[0], -shift[1], -shift[2]), axis=(0, 1, 2))
         nii = nib.Nifti1Image(output.astype(np.uint16), affine=data.affine)
         nii = processing.conform(nii, out_shape=(header["dim"][1], header["dim"][2], header["dim"][3]), voxel_size=(header["pixdim"][1], header["pixdim"][2], header["pixdim"][3]), order=0,)
         nib.save(nii, os.path.join(output_dir, f"{basename}_hemisphere.nii"))
@@ -158,7 +159,7 @@ def main():
         df = make_csv(output, output_dir, basename)
 
         # Clean up temporary files
-        # del odata, data
+        del odata, data
     return
 
 if __name__ == "__main__":

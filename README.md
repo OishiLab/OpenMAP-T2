@@ -10,7 +10,7 @@ If you encounter issues, please consider using a different version.
 
 2. Clone this repository, and go into the repository:
 ```
-git clone -b v2.0.0 https://github.com/OishiLab/OpenMAP-T2.git
+git clone https://github.com/OishiLab/OpenMAP-T2.git
 cd OpenMAP-T2
 ```
 2. Please install PyTorch compatible with your environment.<br>
@@ -46,7 +46,7 @@ If the error occurs for Windows users, please change ```Python3``` to ```Python`
 You can get the pretrained model from this link.
 [Link of pretrained model](https://forms.office.com/Pages/ResponsePage.aspx?id=OPSkn-axO0eAP4b4rt8N7Iz6VabmlEBIhG4j3FiMk75UQUxBMkVPTzlIQTQ1UEZJSFY1NURDNzRERC4u)
 
-![image](media/Download_pretrained.png)
+<!-- ![image](media/Download_pretrained.png) -->
 
 ## Folder
 All images you input must be in NifTi format and have a .nii extension.

@@ -9,12 +9,12 @@ def strip(voxel, model, device):
     Applies a given model to a 3D voxel array and returns the processed output.
 
     Args:
-        voxel (numpy.ndarray): A 3D numpy array of shape (224, 224, 224) representing the input voxel data.
+        voxel (numpy.ndarray): A 3D numpy array of shape (256, 256, 256) representing the input voxel data.
         model (torch.nn.Module): A PyTorch model to be used for processing the voxel data.
         device (torch.device): The device (CPU or GPU) on which the model and data should be loaded.
 
     Returns:
-        torch.Tensor: A 3D tensor of shape (224, 224, 224) containing the processed output.
+        torch.Tensor: A 3D tensor of shape (256, 256, 256) containing the processed output.
     """
     # Set the model to evaluation mode
     model.eval()
@@ -23,15 +23,15 @@ def strip(voxel, model, device):
     # Disable gradient calculation for inference
     with torch.inference_mode():
         # Initialize an empty tensor to store the output
-        output = torch.zeros(224, 224, 224).to(device)
+        output = torch.zeros(256, 256, 256).to(device)
 
         # Iterate over each slice in the voxel data
-        for i in range(1, 224 + 1): # for i, v in enumerate(voxel):
+        for i in range(1, 256 + 1): # for i, v in enumerate(voxel):
             # Reshape the slice to match the model's input dimensions
             image = np.stack([voxel[i - 1], voxel[i], voxel[i + 1]])
 
             # Convert the numpy array to a PyTorch tensor and move it to the specified device
-            image = torch.tensor(image.reshape(1, 3, 224, 224))
+            image = torch.tensor(image.reshape(1, 3, 256, 256))
             image = image.to(device)
 
             # Apply the model to the input image and apply the sigmoid activation function
@@ -41,7 +41,7 @@ def strip(voxel, model, device):
             output[i - 1] = x_out
             
         # Reshape the output tensor to the original voxel dimensions and return it
-        return output.reshape(224, 224, 224)
+        return output.reshape(256, 256, 256)
 
 
 def stripping(data, ssnet, device):
@@ -90,15 +90,18 @@ def stripping(data, ssnet, device):
     x, y, z = map(int, ndimage.center_of_mass(out_e))
 
     # Calculate the shifts needed to center the brain image
-    xd = 112 - x
-    yd = 105 - y
-    zd = 112 - z
+    xd = 128 - x
+    yd = 120 - y
+    zd = 128 - z
+    # xd = 112 - x
+    # yd = 105 - y
+    # zd = 112 - z
 
     # Apply the shifts to center the brain image
     stripped = np.roll(stripped, (xd, yd, zd), axis=(0, 1, 2))
 
     # Crop the centered brain image
-    # stripped = stripped[10:-10, 10:-10, 10:-10]
+    stripped = stripped[16:-16, 16:-16, 16:-16]
 
     # Return the stripped brain image and the shifts applied
     return normalize(stripped), (xd, yd, zd), out_e
