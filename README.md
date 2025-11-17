@@ -60,15 +60,17 @@ INPUR_FOLDER/
 
 OUTPUT_FOLDER/
   ├ A/
-  |   ├ A.nii # input image
-  |   ├ A_SylvianRatio.csv # Ratio of Sylvian Fissure to CSF Sulcus
-  |   ├ A_Type1_Level1.csv # volume information of Type1_Level1 (mm^3)
-  |   ├ A_stripped_mask # skull stripped brain mask
-  |   └ A_274.nii # parcellation map
+  | ├ A.nii # input image
+  | ├ A_SylvianRatio.csv # Ratio of Sylvian Fissure to CSF Sulcus
+  | ├ A_Type1_Level5.csv # volume information of Type1_Level1 (mm^3)
+  | ├ A_stripped_mask # skull stripped brain mask
+  | └ A_274.nii # parcellation map
   └ B/
-      ├ B.nii
-      ├ B_volume.csv
-      └ B_274.nii
+    ├ B.nii
+    ├ B_SylvianRatio.csv.nii
+    ├ B_Type1_Level5.csv.nii
+    ├ B_stripped_mask.csv
+    └ B_274.nii
 
 MODEL_FOLDER/
   ├ SSNet/SSNet.pth
