@@ -45,7 +45,7 @@ If the error occurs for Windows users, please change ```Python3``` to ```Python`
 
 ## How to download the pretrained model.
 You can get the pretrained model from this link.
-[Link of pretrained model](https://forms.office.com/r/uF4zH1U6MC)
+[Link of pretrained model](https://forms.office.com/r/Zpt7N5CdE2)
 
 <!-- ![image](media/Download_pretrained.png) -->
 
