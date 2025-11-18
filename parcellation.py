@@ -46,9 +46,9 @@ def create_parser():
 
 def main():
     """
-    Main function to execute the OpenMAP-T1 parcellation process.
+    Main function to execute the OpenMAP-T2 parcellation process.
     This function performs the following steps:
-    1. Prints a citation message for the OpenMAP-T1 paper.
+    1. Prints a citation message for the OpenMAP-T2.
     2. Parses command-line arguments.
     3. Determines the device to use (CUDA, MPS, or CPU).
     4. Loads the pretrained models.
@@ -60,27 +60,23 @@ def main():
         d. Creates a new NIfTI image with the data converted to float32.
         e. Saves the new NIfTI image to the output directory.
         f. Preprocesses the input image.
-        g. Crops the image using the cropping network.
-        h. Strips the image using the stripping network.
-        i. Parcellates the stripped image using the parcellation networks.
-        j. Separates the hemispheres using the hemisphere networks.
-        k. Postprocesses the parcellated and separated image.
-        l. Generates a CSV file with volume information and saves it.
-        m. Creates a new NIfTI image with the processed output and saves it.
-        n. Cleans up temporary files.
+        g. Strips the image using the stripping network.
+        h. Parcellates the stripped image using the parcellation networks.
+        i. Separates the hemispheres using the hemisphere networks.
+        j. Postprocesses the parcellated and separated image.
+        k. Generates a CSV file with volume information and saves it.
+        l. Creates a new NIfTI image with the processed output and saves it.
+        m. Cleans up temporary files.
     Returns:
         None
     """
 
-    # print(
-    #     "\n#######################################################################\n"
-    #     "Please cite the following paper when using OpenMAP-T1:\n"
-    #     "Kei Nishimaki, Kengo Onda, Kumpei Ikuta, Jill Chotiyanonta, Yuto Uchida, Hitoshi Iyatomi, Kenichi Oishi (2024).\n"
-    #     "OpenMAP-T1: A Rapid Deep Learning Approach to Parcellate 280 Anatomical Regions to Cover the Whole Brain.\n"
-    #     "paper: https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.70063.\n"
-    #     "Submitted for publication in the Human Brain Mapping.\n"
-    #     "#######################################################################\n"
-    # )
+    print(
+        "\n#######################################################################\n"
+        "Please cite the following link when using OpenMAP-T2:\n"
+        "https://github.com/OishiLab/OpenMAP-T2 \n"
+        "#######################################################################\n"
+    )
     # Parse command-line arguments
     opt = create_parser()
 
@@ -135,18 +131,12 @@ def main():
 
         # Separate the hemispheres using the hemisphere networks
         separated = hemisphere(stripped, hnet_c, hnet_a, device)
-        # output = np.pad(separated, [(16, 16), (16, 16), (16, 16)], "constant", constant_values=0)
-        # output = np.roll(output, (-shift[0], -shift[1], -shift[2]), axis=(0, 1, 2))
-        # nii = nib.Nifti1Image(output.astype(np.uint16), affine=data.affine)
-        # nii = processing.conform(nii, out_shape=(header["dim"][1], header["dim"][2], header["dim"][3]), voxel_size=(header["pixdim"][1], header["pixdim"][2], header["pixdim"][3]), order=0,)
-        # nib.save(nii, os.path.join(output_dir, f"{basename}_hemisphere.nii"))
 
         # Postprocess the parcellated and separated image
         output = postprocessing(parcellated, separated, shift, device)
 
         # Create a new NIfTI image with the processed output and save it
         nii = nib.Nifti1Image(output.astype(np.uint16), affine=data.affine)
-        # header = odata.header
         nii = processing.conform(
             nii,
             out_shape=(header["dim"][1], header["dim"][2], header["dim"][3]),

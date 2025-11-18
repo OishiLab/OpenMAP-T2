@@ -53,7 +53,6 @@ def stripping(data, ssnet, device):
     The stripped image is then centered and cropped.
 
     Args:
-        voxel (numpy.ndarray): The input 3D voxel data to be stripped.
         data (nibabel.Nifti1Image): The original neuroimaging data.
         ssnet (torch.nn.Module): The neural network model used for brain stripping.
         device (torch.device): The device on which the neural network model is loaded (e.g., CPU or GPU).
@@ -62,6 +61,7 @@ def stripping(data, ssnet, device):
         tuple: A tuple containing:
             - stripped (numpy.ndarray): The stripped and processed brain image.
             - (xd, yd, zd) (tuple of int): The shifts applied to center the brain image in the x, y, and z directions.
+            - out_e (numpy.ndarray): The thresholded output mask 
     """
     # Normalize the input voxel data
     voxel = data.get_fdata().astype(np.float32)
@@ -84,6 +84,7 @@ def stripping(data, ssnet, device):
     # Multiply the original data by the thresholded output to get the stripped brain image
     stripped = data.get_fdata().astype(np.float32) * out_e
 
+    # Align brightness values in the output using histgram matching.
     stripped = hist_matching(stripped, out_e.astype(bool))
 
     # Calculate the center of mass of the stripped brain image
@@ -93,9 +94,6 @@ def stripping(data, ssnet, device):
     xd = 128 - x
     yd = 120 - y
     zd = 128 - z
-    # xd = 112 - x
-    # yd = 105 - y
-    # zd = 112 - z
 
     # Apply the shifts to center the brain image
     stripped = np.roll(stripped, (xd, yd, zd), axis=(0, 1, 2))

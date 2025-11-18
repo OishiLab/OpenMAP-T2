@@ -102,11 +102,14 @@ def make_csv(parcellation, output_dir, basename):
     sum_sulcus = df.iloc[0, sulcus].sum()
     sum_syl = df.iloc[0, sylvianFissure].sum()
     syl_ratio = sum_syl / sum_sulcus if sum_sulcus != 0 else None
+    formula = ["(Sylvian Fissure L+R)/(Sulcus L+R)", "(Frontal Sulcus LR)+(Central Sulcus LR)+(Parietal Sulcus LR)"]
 
     sylvianRatio = pd.DataFrame({
-        "SylvianFissure L+R": [sum_syl],
-        "Sulcus L+R": [sum_sulcus],
-        "SylvianRatio": [syl_ratio]
+        "SylvianRatio": [syl_ratio],
+        "SylvianFissure_L+R": [sum_syl],
+        "Sulcus_L+R": [sum_sulcus],
+        "SylvianRatio_Caluclation_Formula":[formula[0]],
+        "Sulcus_L+R_Caluclation_Formula":[formula[1]],
     })
     sylvianRatio.to_csv(os.path.join(output_dir, f"{basename}_SylvianRatio.csv"), index=False)
 
