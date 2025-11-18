@@ -134,5 +134,5 @@
 134	Caudate_tail_L
 135	Caudate_tail_R
 136	IV_ventricle
-137	ECS_L
-138	ECS_R
+137	Subarachnoid_Cisterns_L
+138	Subarachnoid_Cisterns_R

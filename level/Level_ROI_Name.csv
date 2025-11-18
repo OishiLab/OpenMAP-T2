@@ -271,5 +271,5 @@ Level5,Type1_Level5,Type1_Level4,Type1_Level3,Type1_Level2,Type1_Level1,Type2_Le
 270,IV_ventricle,IV_ventricle,IV_ventricle,Ventricle,CSF,IV_ventricle,IV_ventricle,IV_ventricle,Ventricle,CSF
 271,ECCL_L,inf_DPWM_L,InferiorWM_L,WhiteMatter_L,Telencephalon_L,EC_L,inf_DPWM_L,InferiorWM_L,WhiteMatter_L,Hemisphere_L
 272,ECCL_R,inf_DPWM_R,InferiorWM_R,WhiteMatter_R,Telencephalon_R,EC_R,inf_DPWM_R,InferiorWM_R,WhiteMatter_R,Hemisphere_R
-273,ECS_L,ECS_L,ECS_L,ECS,CSF,ECS_L,ECS_L,ECS_L,ECS,CSF
-274,ECS_R,ECS_R,ECS_L,ECS,CSF,ECS_R,ECS_R,ECS_L,ECS,CSF
+273,Subarachnoid_Cisterns_L,Subarachnoid_Cisterns_L,Subarachnoid_Cisterns_L,Subarachnoid_Cisterns,CSF,Subarachnoid_Cisterns_L,Subarachnoid_Cisterns_L,Subarachnoid_Cisterns_L,Subarachnoid_Cisterns,CSF
+274,Subarachnoid_Cisterns_R,Subarachnoid_Cisterns_R,Subarachnoid_Cisterns_R,Subarachnoid_Cisterns,CSF,Subarachnoid_Cisterns_R,Subarachnoid_Cisterns_R,Subarachnoid_Cisterns_R,Subarachnoid_Cisterns,CSF

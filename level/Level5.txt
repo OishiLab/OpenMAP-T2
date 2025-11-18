@@ -270,5 +270,5 @@
 270	IV_ventricle
 271	ECCL_L
 272	ECCL_R
-273	ECS_L
-274	ECS_R
+273	Subarachnoid_Cisterns_L
+274	Subarachnoid_Cisterns_R
