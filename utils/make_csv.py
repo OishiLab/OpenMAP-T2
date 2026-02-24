@@ -97,8 +97,8 @@ def make_csv(parcellation, output_dir, basename):
     df_Type2_level1.to_csv(os.path.join(output_dir, f"{basename}_Type2_Level1.csv"), index=False)
 
     df = pd.read_csv(os.path.join(output_dir, f"{basename}_Type1_Level5.csv")).iloc[:,1:]
-    sulcus =  [248, 249, 250, 251, 252, 253, 254, 255, 258, 259, 260, 261]
-    sylvianFissure = [256, 257]
+    sulcus =  [249, 250, 251, 252, 253, 254, 255, 256, 259, 260, 261, 262]
+    sylvianFissure = [257, 258]
     sum_sulcus = df.iloc[0, sulcus].sum()
     sum_syl = df.iloc[0, sylvianFissure].sum()
     syl_ratio = sum_syl / sum_sulcus if sum_sulcus != 0 else None
