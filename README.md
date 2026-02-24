@@ -1,5 +1,5 @@
 # OpenMAP-T2
-**OpenMAP-T2 parcellates the whole brain into 274 anatomical regions based on JHU-atlas in 50 (sec/case).**
+**OpenMAP-T2 parcellates the whole brain into 280 anatomical regions based on JHU-atlas in 70 (sec/case).**
 
 <!-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1fmfkxxZjChExnl5cHITYkNYgTu3MZ7Ql#scrollTo=xwZxyL5ewVNF) -->
 
@@ -64,13 +64,13 @@ OUTPUT_FOLDER/
   | ├ A_SylvianRatio.csv # Ratio of Sylvian Fissure to CSF Sulcus
   | ├ A_Type1_Level5.csv # volume information of Type1_Level1 (mm^3)
   | ├ A_stripped_mask # skull stripped brain mask
-  | └ A_274.nii # parcellation map
+  | └ A_280.nii # parcellation map
   └ B/
     ├ B.nii
     ├ B_SylvianRatio.csv.nii
     ├ B_Type1_Level5.csv.nii
     ├ B_stripped_mask.csv
-    └ B_274.nii
+    └ B_280.nii
 
 MODEL_FOLDER/
   ├ SSNet/SSNet.pth
