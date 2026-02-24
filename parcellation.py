@@ -143,7 +143,7 @@ def main():
             voxel_size=(header["pixdim"][1], header["pixdim"][2], header["pixdim"][3]),
             order=0,
         )
-        nib.save(nii, os.path.join(output_dir, f"{basename}_274.nii"))
+        nib.save(nii, os.path.join(output_dir, f"{basename}_280.nii"))
 
         # Generate a CSV file with volume information and save it
         df = make_csv(output, output_dir, basename)
