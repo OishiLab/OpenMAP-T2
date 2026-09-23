@@ -1,6 +1,6 @@
-nibabel==5.3.2
-pandas==2.3.3
-scipy==1.13.1
-SimpleITK==2.5.2
-tqdm==4.67.1
-scikit-image==0.24.0
+nibabel==5.4.2
+pandas==3.0.3
+scipy==1.17.1
+scikit-image==0.25.2
+SimpleITK==2.5.5
+tqdm==4.68.2
