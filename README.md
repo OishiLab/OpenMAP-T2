@@ -154,6 +154,7 @@ INPUT_FOLDER/
 
 OUTPUT_FOLDER/
   ├── failed_cases.csv          # only when a case fails, is skipped, or is implausibly small
+  ├── processing_log.txt        # console output of the run
   └── A/
       ├── original/
       │   ├── A.nii.gz
@@ -181,7 +182,9 @@ With `--output-space conform`, the same folders are used and filenames include `
 `level/` holds the JHU-atlas lookup tables.
 
 * `level/OpenMAP-T2_multilevel_lookup_table_dictionary.csv` maps Type1 Level5 names onto the coarser levels.
-* `level/Level1.txt` through `level/Level5.txt` are the Type1 name lists.
+* `level/Level_ROI_No.csv` and `level/Level_ROI_Name.csv` map each of the 280 Level5 labels onto every Type1/Type2 level (numbers and names).
+* `level/Type1Level1.txt` through `Type1Level5.txt` and `Type2Level1.txt` through `Type2Level5.txt` list the label number and name at each level.
+* `level/Multilevel.txt` is the combined table.
 
 ## FAQ
 

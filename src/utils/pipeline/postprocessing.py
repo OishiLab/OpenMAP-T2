@@ -28,29 +28,20 @@ def _lut() -> np.ndarray:
     return _LUT
 
 
-def _insert_label(seg: np.ndarray, start: int, end: int) -> np.ndarray:
-    out = seg.copy()
-    for num in reversed(range(start, end)):
-        out[seg == num] = num + 6
-    return out
+def _relabel_table(max_label: int) -> np.ndarray:
+    """Lookup table for the sulcal/Sylvian relabeling: shift 251-280 up by 6, then merge in order."""
+    lut = np.arange(max(max_label, 286) + 1, dtype=np.int16)
+    lut[251:281] += 6
+    for old, new in (
+        (257, 252), (258, 254), (259, 256), (260, 258), (261, 259), (262, 260), (263, 262),
+        (281, 251), (282, 253), (283, 255), (284, 257), (285, 261), (286, 263),
+    ):  # fmt: skip
+        lut[lut == old] = new
+    return lut
 
 
 def _relabel_segmentation(parc: np.ndarray) -> np.ndarray:
-    seg = _insert_label(parc, 251, 281)
-    seg[seg == 257] = 252
-    seg[seg == 258] = 254
-    seg[seg == 259] = 256
-    seg[seg == 260] = 258
-    seg[seg == 261] = 259
-    seg[seg == 262] = 260
-    seg[seg == 263] = 262
-    seg[seg == 281] = 251
-    seg[seg == 282] = 253
-    seg[seg == 283] = 255
-    seg[seg == 284] = 257
-    seg[seg == 285] = 261
-    seg[seg == 286] = 263
-    return seg
+    return _relabel_table(int(parc.max()))[parc]
 
 
 def _fuse_280(parcellated: np.ndarray, separated: np.ndarray) -> np.ndarray:

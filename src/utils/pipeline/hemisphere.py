@@ -16,17 +16,26 @@ HEMI_DILATE = 5
 
 def hemisphere(voxel: np.ndarray, hnet: nn.Module, device: torch.device, batch_size: int, use_amp: bool) -> np.ndarray:
     volume = preprocess_intensity(voxel)
-    kwargs = dict(
-        model=hnet,
-        device=device,
-        n_classes=N_CLASSES,
-        batch_size=batch_size,
-        use_amp=use_amp,
-        binary=False,
+    acc = torch.empty((N_CLASSES, *volume.shape), dtype=torch.float32)
+    planes = (
+        (volume.transpose(1, 2, 0), "coronal", (2, 0, 3, 1)),
+        (volume.transpose(2, 1, 0), "axial", (3, 0, 2, 1)),
     )
-    out_c = forward_plane(volume.transpose(1, 2, 0), direction=DIRECTION_VALUE["coronal"], **kwargs).permute(1, 3, 0, 2)
-    out_a = forward_plane(volume.transpose(2, 1, 0), direction=DIRECTION_VALUE["axial"], **kwargs).permute(1, 3, 2, 0)
-    fused = torch.argmax(out_c + out_a, dim=0).numpy().astype(np.int16)
+    for k, (plane, name, inverse) in enumerate(planes):
+        forward_plane(
+            plane,
+            model=hnet,
+            device=device,
+            n_classes=N_CLASSES,
+            direction=DIRECTION_VALUE[name],
+            batch_size=batch_size,
+            use_amp=use_amp,
+            binary=False,
+            out_view=acc.permute(*inverse),
+            accumulate=k > 0,
+        )
+    fused = torch.argmax(acc, dim=0).numpy().astype(np.int16)
+    del acc
     if device.type == "cuda":
         torch.cuda.empty_cache()
 

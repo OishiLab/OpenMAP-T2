@@ -1,4 +1,5 @@
 import argparse
+import gc
 import glob
 import os
 import sys
@@ -15,7 +16,7 @@ from utils.models.load_model import load_model
 from utils.output.make_csv import make_csv
 from utils.output.make_level import create_parcellated_images
 from utils.output.output_space import OUTPUT_SPACE_CHOICES, save_label_volume
-from utils.output.processing_log import ProcessingLog
+from utils.output.processing_log import ProcessingLog, capture_console_output
 from utils.pipeline.hemisphere import hemisphere
 from utils.pipeline.parcellate import parcellation
 from utils.pipeline.postprocessing import postprocessing
@@ -67,6 +68,11 @@ def _basename(path: str) -> str:
 
 
 def main():
+    with capture_console_output() as console_log:
+        _run(console_log)
+
+
+def _run(console_log):
     print(
         "\n#######################################################################\n"
         "Please cite the following link when using OpenMAP-T2:\n"
@@ -74,6 +80,7 @@ def main():
         "#######################################################################\n"
     )
     opt = create_parser()
+    console_log.bind_output_folder(opt.o)
 
     if torch.cuda.is_available():
         device = torch.device("cuda")
@@ -91,15 +98,20 @@ def main():
         print(f"Error during model loading: {exc}")
         sys.exit(1)
 
-    if not os.path.isdir(opt.i):
-        print(f"Error: Input directory {opt.i} does not exist.")
+    if os.path.isfile(opt.i):
+        if not opt.i.endswith((".nii", ".nii.gz")):
+            print(f"Error: Input file {opt.i} is not a NIfTI file (.nii or .nii.gz).")
+            sys.exit(1)
+        pathes = [opt.i]
+    elif os.path.isdir(opt.i):
+        pathes = sorted(
+            glob.glob(os.path.join(opt.i, "**/*.nii"), recursive=True)
+            + glob.glob(os.path.join(opt.i, "**/*.nii.gz"), recursive=True)
+        )
+        print(f"Found {len(pathes)} NIfTI files in {opt.i}")
+    else:
+        print(f"Error: Input path {opt.i} does not exist.")
         sys.exit(1)
-
-    pathes = sorted(
-        glob.glob(os.path.join(opt.i, "**/*.nii"), recursive=True)
-        + glob.glob(os.path.join(opt.i, "**/*.nii.gz"), recursive=True)
-    )
-    print(f"Found {len(pathes)} NIfTI files in {opt.i}")
 
     processing_log = ProcessingLog()
     os.makedirs(opt.o, exist_ok=True)
@@ -113,9 +125,10 @@ def main():
 
             original = nib.squeeze_image(nib.as_closest_canonical(nib.load(path)))
             nib.save(
-                nib.Nifti1Image(original.get_fdata().astype(np.float32), affine=original.affine),
+                nib.Nifti1Image(np.asarray(original.dataobj, dtype=np.float32), affine=original.affine),
                 os.path.join(output_dir, f"original/{basename}{opt.output_ext}"),
             )
+            del original
 
             odata, data = preprocessing(path, output_dir, basename, opt.output_ext)
             cropped, shift = stripping(
@@ -136,7 +149,9 @@ def main():
 
             parcellated = parcellation(cropped, pnet, device, opt.batch_size, use_amp)
             separated = hemisphere(cropped, hnet, device, opt.batch_size, use_amp)
+            del cropped
             output = postprocessing(parcellated, separated, shift)
+            del parcellated, separated
             processing_log.check_low_volume(path, basename, output)
             make_csv(output, output_dir, basename)
             save_label_volume(
@@ -151,11 +166,15 @@ def main():
                 opt.output_space,
             )
             create_parcellated_images(output, output_dir, basename, odata, data, opt.output_ext, opt.output_space)
-            del odata, data, cropped, output
         except Exception as exc:
             print(f"Error processing {path}: {exc}")
             processing_log.add_failed(path, basename or os.path.basename(path), str(exc))
-            continue
+        finally:
+            # Drop large per-case arrays so memory does not grow across a long batch.
+            odata = data = cropped = parcellated = separated = output = None
+            gc.collect()
+            if device.type == "cuda":
+                torch.cuda.empty_cache()
 
     processing_log.save(opt.o)
 
